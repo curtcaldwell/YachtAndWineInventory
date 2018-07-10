@@ -1,0 +1,8 @@
+<h1>List</h1>
+<ul>
+@foreach (var yacht in Model)
+{
+  <li>@yacht.GetYacht()</li>
+}
+</ul>
+<a href="/yacht">Add a new yacht</a>
