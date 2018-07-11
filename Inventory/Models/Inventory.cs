@@ -9,11 +9,17 @@ namespace Inventory.Models
   {
     private string _wine;
     private int _id;
+    private string _yachtId;
 
-    public Wine (string wine, int Id = 0)
+    public Wine (string wine, string yachtId, int Id = 0)
     {
       _wine = wine;
       _id = Id;
+      _yachtId = yachtId;
+    }
+    public string GetYachtId()
+    {
+      return _yachtId;
     }
     public string GetWine()
     {
@@ -23,13 +29,14 @@ namespace Inventory.Models
     {
       return _id;
     }
+
     public static Wine Find(int id)
     {
       MySqlConnection conn = DB.Connection();
         conn.Open();
 
         var cmd = conn.CreateCommand() as MySqlCommand;
-        cmd.CommandText = @"SELECT * FROM `Wine` WHERE id = @thisId;";
+        cmd.CommandText = @"SELECT * FROM `wines` WHERE id = @thisId;";
 
         MySqlParameter thisId = new MySqlParameter();
         thisId.ParameterName = "@thisId";
@@ -40,14 +47,16 @@ namespace Inventory.Models
 
         int itemId = 0;
         string itemWine = "";
+        string itemYachtId = "";
 
         while (rdr.Read())
         {
             itemId = rdr.GetInt32(0);
             itemWine = rdr.GetString(1);
+            itemYachtId = rdr.GetString(2);
         }
 
-        Wine foundWine= new Wine(itemWine, itemId);
+        Wine foundWine= new Wine(itemWine, itemYachtId, itemId);
 
          conn.Close();
          if (conn != null)
@@ -63,13 +72,14 @@ namespace Inventory.Models
       MySqlConnection conn = DB.Connection();
       conn.Open();
       MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"SELECT * FROM Wine;";
+      cmd.CommandText = @"SELECT * FROM wines;";
       MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
       while(rdr.Read())
       {
         int itemId = rdr.GetInt32(0);
         string itemWine = rdr.GetString(1);
-        Wine newWine = new Wine(itemWine, itemId);
+        string itemYachtId = rdr.GetString(2);
+        Wine newWine = new Wine(itemWine, itemYachtId, itemId);
         allWines.Add(newWine);
       }
       conn.Close();
@@ -85,12 +95,17 @@ namespace Inventory.Models
       conn.Open();
 
       var cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"INSERT INTO `Wine` (`wine`) VALUES (@itemWine);";
+      cmd.CommandText = @"INSERT INTO `wines` (`wine`, `yacht_id`) VALUES (@itemWine, @itemYachtId);";
 
       MySqlParameter wine = new MySqlParameter();
       wine.ParameterName = "@itemWine";
       wine.Value = this._wine;
       cmd.Parameters.Add(wine);
+
+      MySqlParameter yachtId = new MySqlParameter();
+      yachtId.ParameterName = "@itemYachtId";
+      yachtId.Value = this._yachtId;
+      cmd.Parameters.Add(yachtId);
 
 
       cmd.ExecuteNonQuery();
@@ -116,13 +131,38 @@ namespace Inventory.Models
         return (idEquality && yachtEquality);
       }
     }
+      public void Edit(string newWine)
+      {
+      MySqlConnection conn = DB.Connection();
+      conn.Open();
+      var cmd = conn.CreateCommand() as MySqlCommand;
+      cmd.CommandText = @"UPDATE wines SET wine = @newWine WHERE id = @searchId;";
+      MySqlParameter searchId = new MySqlParameter();
+      searchId.ParameterName = "@searchId";
+      searchId.Value = _id;
+      cmd.Parameters.Add(searchId);
+
+      MySqlParameter wine = new MySqlParameter();
+      wine.ParameterName = "@newWine";
+      wine.Value = newWine;
+      cmd.Parameters.Add(wine);
+
+      cmd.ExecuteNonQuery();
+      _wine = newWine;
+
+      conn.Close();
+      if (conn != null)
+      {
+        conn.Dispose();
+      }
+    }
     public static void DeleteAll()
     {
       MySqlConnection conn = DB.Connection();
       conn.Open();
 
       var cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"DELETE FROM Wine;";
+      cmd.CommandText = @"DELETE FROM wines;";
 
       cmd.ExecuteNonQuery();
 
@@ -158,7 +198,7 @@ namespace Inventory.Models
         conn.Open();
 
         var cmd = conn.CreateCommand() as MySqlCommand;
-        cmd.CommandText = @"SELECT * FROM `Inventory` WHERE id = @thisId;";
+        cmd.CommandText = @"SELECT * FROM `yachts` WHERE id = @thisId;";
 
         MySqlParameter thisId = new MySqlParameter();
         thisId.ParameterName = "@thisId";
@@ -192,7 +232,7 @@ namespace Inventory.Models
       MySqlConnection conn = DB.Connection();
       conn.Open();
       MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"SELECT * FROM Inventory;";
+      cmd.CommandText = @"SELECT * FROM yachts;";
       MySqlDataReader rdr = cmd.ExecuteReader() as MySqlDataReader;
       while(rdr.Read())
       {
@@ -214,7 +254,7 @@ namespace Inventory.Models
       conn.Open();
 
       var cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"INSERT INTO `Inventory` (`yacht`) VALUES (@itemYacht);";
+      cmd.CommandText = @"INSERT INTO `yachts` (`yacht`) VALUES (@itemYacht);";
 
       MySqlParameter yacht = new MySqlParameter();
       yacht.ParameterName = "@itemYacht";
@@ -250,7 +290,7 @@ namespace Inventory.Models
       conn.Open();
 
       var cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"DELETE FROM Inventory;";
+      cmd.CommandText = @"DELETE FROM yachts;";
 
       cmd.ExecuteNonQuery();
 

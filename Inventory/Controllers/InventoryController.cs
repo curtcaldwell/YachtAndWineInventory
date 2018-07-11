@@ -18,7 +18,7 @@ namespace Inventory.Controllers
     [HttpPost("/wine/list")]
     public ActionResult GetWine()
     {
-      Wine newWine = new Wine(Request.Form["wine"]);
+      Wine newWine = new Wine(Request.Form["wine"], Request.Form["yachtId"]);
       newWine.Save();
       return View("WineList", Wine.GetAll());
     }
@@ -30,5 +30,19 @@ namespace Inventory.Controllers
       newYacht.Save();
       return View("YachtList", Yacht.GetAll());
     }
-}
+    [HttpGet("/wine/list/{id}/update")]
+    public ActionResult UpdateForm(int id)
+    {
+      Wine thisWine = Wine.Find(id);
+      return View(thisWine);
+    }
+
+    [HttpPost("/wine/list/{id}/update")]
+    public ActionResult Update(int id)
+    {
+      Wine thisWine = Wine.Find(id);
+      thisWine.Edit(Request.Form["newname"]);
+      return RedirectToAction("WineList");
+    }
+  }
 }

@@ -4,6 +4,6 @@
 <ul>
 @foreach (var wine in Model)
 {
-<li>@wine.GetWine()</li>
+<li>@wine.GetWine() | <a href="/wine/list/@wine.GetId()/update">Edit</a></li>
 }
 </ul>
