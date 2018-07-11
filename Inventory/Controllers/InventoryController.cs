@@ -10,18 +10,18 @@ namespace Inventory.Controllers
     {
       return View();
     }
-    // [HttpGet("/wine")]
-    // public ActionResult Wine()
-    // {
-    //   return View();
-    // }
-    // [HttpPost("/wine/list")]
-    // public ActionResult GetWine()
-    // {
-    //   Item newItem = new Item(Request.Form["wine"]);
-    //   newItem.Save();
-    //   return View("WineList", Wine.GetAll());
-    // }
+    [HttpGet("/wine")]
+    public ActionResult Wines()
+    {
+      return View();
+    }
+    [HttpPost("/wine/list")]
+    public ActionResult GetWine()
+    {
+      Wine newWine = new Wine(Request.Form["wine"]);
+      newWine.Save();
+      return View("WineList", Wine.GetAll());
+    }
 
     [HttpPost("/yacht/list")]
     public ActionResult GetYacht()
