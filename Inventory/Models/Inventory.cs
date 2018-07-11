@@ -156,13 +156,15 @@ namespace Inventory.Models
         conn.Dispose();
       }
     }
-    public static void DeleteAll()
+    public void Delete()
     {
       MySqlConnection conn = DB.Connection();
       conn.Open();
 
       var cmd = conn.CreateCommand() as MySqlCommand;
-      cmd.CommandText = @"DELETE FROM wines;";
+      cmd.CommandText = @"DELETE FROM `wines` WHERE Id = @thisId;";
+
+      cmd.Parameters.Add(new MySqlParameter("@thisId", _id));
 
       cmd.ExecuteNonQuery();
 

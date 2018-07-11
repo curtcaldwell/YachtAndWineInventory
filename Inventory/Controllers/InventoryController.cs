@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Inventory.Models;
+using System.Collections.Generic;
 
 namespace Inventory.Controllers
 {
@@ -14,6 +15,12 @@ namespace Inventory.Controllers
     public ActionResult Wines()
     {
       return View();
+    }
+    [HttpGet("/wine/list")]
+    public ActionResult WineList()
+    {
+      List<Wine> allWines = Wine.GetAll();
+      return View(allWines);
     }
     [HttpPost("/wine/list")]
     public ActionResult GetWine()
@@ -30,18 +37,25 @@ namespace Inventory.Controllers
       newYacht.Save();
       return View("YachtList", Yacht.GetAll());
     }
-    [HttpGet("/wine/list/{id}/update")]
+    [HttpGet("/Inventory/{id}/update")]
     public ActionResult UpdateForm(int id)
     {
       Wine thisWine = Wine.Find(id);
       return View(thisWine);
     }
 
-    [HttpPost("/wine/list/{id}/update")]
+    [HttpPost("/Inventory/{id}/update")]
     public ActionResult Update(int id)
     {
       Wine thisWine = Wine.Find(id);
       thisWine.Edit(Request.Form["newname"]);
+      return RedirectToAction("WineList");
+    }
+
+    [HttpPost("/wine/delete")]
+    public ActionResult DeleteOneWine(int wineId)
+    {
+      Wine.Find(wineId).Delete();
       return RedirectToAction("WineList");
     }
   }

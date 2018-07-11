@@ -1,9 +1,26 @@
-
+<head>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+</head>
 
 <h1>WINE LIST</h1>
 <ul>
 @foreach (var wine in Model)
 {
-<li>@wine.GetWine() | <a href="/wine/list/@wine.GetId()/update">Edit</a></li>
+<li>@wine.GetWine() | <a href="/Inventory/@wine.GetId()/update">Edit</a> | <a href="/wine/list" class="deleteAction" id="@wine.GetId()">Delete</a></li>
 }
 </ul>
+
+<form id="secret-form" action="/wine/delete" method="post">
+  <input type="hidden" name="wineId" value="">
+</form>
+
+<script type="text/javascript">
+  $("#secret-form").hide();
+  $(document).ready(function() {
+    $("a.deleteAction").click(function(event) {
+      event.preventDefault();
+      $("form#secret-form input").val(this.id);
+      $("form#secret-form").submit();
+    })
+  })
+</script>
